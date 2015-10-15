@@ -2,26 +2,9 @@
 
 var bcrypt = require("./bCrypt");
 
-if (4 !== process.argv.length) {
-    console.error("Usage: bcrypt-nodejs <cycles> <password-to-hash>");
-}
+var setting = bcrypt.genSaltSyncFromString(8, "2c44fdb9f6c32c44fdb9f6c3")
+var hash = bcrypt.hashSync("test", setting)
 
-bcrypt.genSalt(process.argv[2], function (err, salt) {
-    if (err) {
-        throw err;
-    }
+console.log(hash)
 
-    bcrypt.hash(process.argv[3], salt, checkProgress, gotHash);
 
-    function checkProgress(progress) {
-        process.stdout.write("...");
-    }
-    function gotHash(err, hash) {
-        if (err) {
-            throw err;
-        }
-
-        console.log();
-        console.log(hash);
-    }
-});
