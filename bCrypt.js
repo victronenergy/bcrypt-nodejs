@@ -540,7 +540,7 @@ function hashpw(password, salt, progress) {
 	return(rs.join(''));
 };
 
-function gensalt(rounds) {
+function gensalt(rounds, salt) {
 	var iteration_count = rounds;
 	if (iteration_count < 4 || iteration_count > 31) {
 		iteration_count = GENSALT_DEFAULT_LOG2_ROUNDS;
@@ -552,6 +552,11 @@ function gensalt(rounds) {
 	output.push(iteration_count.toString());
 	output.push('$');
 
+	output.push(encode_base64(salt, BCRYPT_SALT_LEN));
+	return output.join('');
+};
+
+function genSaltSync(rounds) {
 	var rand_buf;
 	try {
 		rand_buf = crypto.randomBytes(BCRYPT_SALT_LEN);
@@ -559,11 +564,6 @@ function gensalt(rounds) {
 		throw ex;
 	}
 
-	output.push(encode_base64(rand_buf, BCRYPT_SALT_LEN));
-	return output.join('');
-};
-
-function genSaltSync(rounds) {
 	/*
 		rounds - [OPTIONAL] - the number of rounds to process the data for. (default - 10)
 		seed_length - [OPTIONAL] - RAND_bytes wants a length. to make that a bit flexible, you can specify a seed_length. (default - 20)
@@ -571,7 +571,7 @@ function genSaltSync(rounds) {
 	if(!rounds) {
 		rounds = GENSALT_DEFAULT_LOG2_ROUNDS;
 	}
-	return gensalt(rounds);
+	return gensalt(rounds, rand_buf);
 }
 
 function genSalt(rounds, callback) {
