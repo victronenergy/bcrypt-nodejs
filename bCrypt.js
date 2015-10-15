@@ -597,6 +597,22 @@ function genSalt(rounds, callback) {
 	});
 }
 
+// generate static static salt with workload rounds
+function genSaltSyncFromString(rounds, string) {
+	if(!rounds) {
+		rounds = GENSALT_DEFAULT_LOG2_ROUNDS;
+	}
+
+	if (string.length < BCRYPT_SALT_LEN)
+		throw "string must be > 16 chars"
+
+	var buf = Array();
+	for (var i = 0; i < BCRYPT_SALT_LEN; i++)
+		buf[i] = string.charCodeAt(i)
+
+	return gensalt(rounds, buf);
+}
+
 function hashSync(data, salt, progress) {
 	/*
 		data - [REQUIRED] - the data to be encrypted.
@@ -703,6 +719,7 @@ function getRounds(encrypted) {
 
 exports.genSaltSync = genSaltSync;
 exports.genSalt = genSalt;
+exports.genSaltSyncFromString = genSaltSyncFromString
 exports.hashSync = hashSync;
 exports.hash = hash;
 exports.compareSync = compareSync;
